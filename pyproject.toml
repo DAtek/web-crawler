@@ -1,0 +1,57 @@
+[project]
+name = "datek-web-crawler"
+version = "0.1.0"
+description = "Simple, powerful web crawler"
+readme = "README.md"
+requires-python = ">=3.13"
+
+dependencies = [
+    "lxml>=5.3.2",
+    "structlog>=25.2.0",
+]
+
+[dependency-groups]
+httpx = [
+    "httpx>=0.28.1",
+]
+
+s3 = [
+    "datek-app-utils>=0.4.0",
+    "boto3>=1.37.1",
+    "types-boto3[s3]>=1.37.33",
+]
+
+dev = [
+    "httpx>=0.28.1",
+    "lxml-stubs>=0.5.1",
+    "mypy>=1.15.0",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "pytest-cov>=6.1.1",
+    "radon>=6.0.1",
+    "ruff>=0.11.4",
+    "types-aiofiles>=24.1.0.20250326",
+    "boto3>=1.37.1",
+    "types-boto3[s3]>=1.37.33",
+    "datek-app-utils>=0.4.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle
+    "F", # Pyflakes
+    "UP", # pyupgrade
+    "I", # isort
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope= "session"
+addopts = "--cov=datek_web_crawler"
+
+[tool.uv]
+link-mode = "symlink"
