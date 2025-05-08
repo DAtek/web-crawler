@@ -17,8 +17,10 @@ jobs:
           [ -z "${version}" ] && exit 1
           echo "RELEASE_VERSION=${version}" >> $GITHUB_ENV
 
+      - uses: astral-sh/setup-uv@v5
+
       - name: Build and publish
         run: |
           uvx --from=toml-cli toml set --toml-path=pyproject.toml project.version ${RELEASE_VERSION}
           uv build
-          poetry publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
+          uv publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
