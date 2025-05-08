@@ -3,12 +3,10 @@ from http.client import OK
 from queue import Queue
 from unittest.mock import Mock
 
-from datek_web_crawler.modules.page_downloader.httpx_downloader import (
-    HTTPXPageDownloader,
-)
 from datek_web_crawler.modules.page_store.s3 import S3PageStore
 from datek_web_crawler.utils import run_in_threadpool
 from datek_web_crawler.workers.downloader import download
+from tests.helpers import DummyDownloader
 
 
 async def test_download(test_bucket, mocked_httpx_get, cleanup):
@@ -25,11 +23,10 @@ async def test_download(test_bucket, mocked_httpx_get, cleanup):
     downloaded_paths: Queue[str] = Queue()
 
     # when
-    HTTPXPageDownloader.BASE_URL = "https://demo.com"
     download_task = create_task(
         download(
             page_store_class=S3PageStore,
-            page_downloader_class=HTTPXPageDownloader,
+            page_downloader_class=DummyDownloader,
             paths_to_collect=paths_to_collect,
             downloaded_paths=downloaded_paths,
             concurrent_requests=10,

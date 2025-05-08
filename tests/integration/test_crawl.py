@@ -1,12 +1,10 @@
-from asyncio import timeout
-from threading import Thread
-from time import sleep
+from asyncio import CancelledError, sleep, timeout
 from uuid import uuid4
 
 import structlog
 from pytest import raises
 
-from datek_web_crawler.crawl import StopError, crawl
+from datek_web_crawler.crawl import crawl
 from datek_web_crawler.modules.deduplicator.memory import MemoryDeduplicator
 from datek_web_crawler.modules.page_analyzer import PageAnalyzer
 from datek_web_crawler.modules.page_downloader.base import PageDownloader
@@ -65,29 +63,17 @@ class DummyPageAnalyzer(PageAnalyzer[Dummy]):
         return {"/path1", str(uuid4())}
 
 
-class BrokenResultStore(ResultStore[Dummy]):
-    err_class = Exception
+class StoppingResultStore(ResultStore[Dummy]):
     err_after = 0.3
+    error_msg = "NUCLEAR MELTDOWN"
+    err_class: type[BaseException] = CancelledError
 
-    def __init__(self):
-        self._stopping_thread: Thread | None = None
-        self._err: Exception | None = None
+    async def save(self, result: Dummy): ...
 
-    def save(self, result: Dummy):
-        if not self._stopping_thread:
-            self._stopping_thread = Thread(
-                target=self._set_err,
-                daemon=True,
-            )
-            self._stopping_thread.start()
-
-        if self._err:
-            raise self._err
-
-    def _set_err(self):
-        sleep(self.err_after)
-        self._err = self.err_class()
+    async def signal_stop(self):
+        await sleep(self.err_after)
+        raise self.err_class(self.error_msg)
 
 
-class StoppingResultStore(BrokenResultStore):
-    err_class = StopError
+class BrokenResultStore(StoppingResultStore):
+    err_class = Exception

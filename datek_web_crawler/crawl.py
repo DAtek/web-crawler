@@ -1,3 +1,4 @@
+import asyncio
 import multiprocessing
 from asyncio import CancelledError, gather
 from collections.abc import Callable
@@ -14,16 +15,13 @@ from datek_web_crawler.modules.page_downloader.httpx_downloader import (
 )
 from datek_web_crawler.modules.page_store.base import PageStore
 from datek_web_crawler.modules.result_store import ResultStore
-from datek_web_crawler.types import Queue, StrQueue
-from datek_web_crawler.utils import run_in_processpool
+from datek_web_crawler.types import AsyncQueue, Queue, StrQueue
+from datek_web_crawler.utils import from_sync_to_async_queue, run_in_processpool
 from datek_web_crawler.workers.analyzer import analyze_page
 from datek_web_crawler.workers.deduplicator import dedup
 from datek_web_crawler.workers.downloader import download
 from datek_web_crawler.workers.saver import save
 from datek_web_crawler.workers.status_logger import log_status
-
-
-class StopError(Exception): ...
 
 
 async def crawl[T](
@@ -48,6 +46,7 @@ async def crawl[T](
         downloaded_paths: StrQueue = manager.Queue()
         new_paths: StrQueue = manager.Queue()
         results: Queue[T] = manager.Queue()
+        async_results: AsyncQueue[T] = asyncio.Queue()
         paths_to_collect.put(start_url)
 
         coroutines = [
@@ -58,6 +57,7 @@ async def crawl[T](
                 downloaded_paths=downloaded_paths,
                 concurrent_requests=concurrent_requests,
             ),
+            from_sync_to_async_queue(results, async_results),
             log_status(paths_to_collect, downloaded_paths),
             run_in_processpool(
                 pool,
@@ -92,7 +92,7 @@ async def crawl[T](
 
         try:
             await gather(*coroutines)
-        except (CancelledError, StopError):
+        except CancelledError:
             get_logger().info("Crawler stopped")
             pool.shutdown(wait=False, cancel_futures=True)
         except Exception as e:

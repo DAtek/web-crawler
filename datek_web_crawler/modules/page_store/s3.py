@@ -1,13 +1,12 @@
-from datek_app_utils.env_config.base import BaseConfig
-
 from datek_web_crawler.modules.page_store.base import PageStore
 
 try:
     from boto3 import Session
+    from datek_app_utils.env_config.base import BaseConfig
     from types_boto3_s3.service_resource import Bucket
 
 except ImportError:  # pragma: no cover
-    print("Install the `s3` extras")
+    print("Install the `s3` extra")
     raise
 
 

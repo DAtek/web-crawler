@@ -1,12 +1,13 @@
+import asyncio
+from asyncio import gather, run
 from collections.abc import Callable
-from functools import wraps
 from os import getpid
-from queue import Queue
 
 from structlog import get_logger
 
 from datek_web_crawler.modules.result_store import ResultStore
-from datek_web_crawler.utils import run_in_loop
+from datek_web_crawler.types import AsyncQueue, Queue
+from datek_web_crawler.utils import from_sync_to_async_queue
 
 
 def save[T](
@@ -17,19 +18,27 @@ def save[T](
     if configure_logger:
         configure_logger()
 
-    logger = get_logger().bind(pid=getpid(), name="ModelSaver")
-    logger.info("Worker started")
-    result_saver = result_store_class()
-    f = _save_decorator(result_saver.save)
-    f = run_in_loop(f)
-    f(queue)
-    logger.info("Worker stopped")
+    logger = get_logger().bind(pid=getpid(), name="ResultSaver")
+    logger.info("Started")
+    run(_save(queue, result_store_class()))
 
 
-def _save_decorator[T](f: Callable):
-    @wraps(f)
-    def wrapper(queue: Queue[T]):
-        item: T = queue.get()
-        f(item)
+async def _save[T](
+    queue: Queue[T],
+    result_store: ResultStore[T],
+):
+    async_queue: AsyncQueue[T] = asyncio.Queue()
+    await gather(
+        from_sync_to_async_queue(queue, async_queue),
+        _save_results(async_queue, result_store),
+        result_store.signal_stop(),
+    )
 
-    return wrapper
+
+async def _save_results[T](
+    queue: AsyncQueue[T],
+    result_store: ResultStore[T],
+):
+    while True:
+        result = await queue.get()
+        await result_store.save(result)

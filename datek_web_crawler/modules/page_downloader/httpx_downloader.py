@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 try:
     from httpx import AsyncClient
 except ImportError:  # pragma: no cover
@@ -8,17 +10,16 @@ from datek_web_crawler.modules.page_downloader.base import DownloadError, PageDo
 
 
 class HTTPXPageDownloader(PageDownloader):
-    BASE_URL: str
-
     def __init__(self):
-        self._client = self._init_client()
-
-    def _init_client(self) -> AsyncClient:
-        return AsyncClient(
-            timeout=30,
+        self._client = AsyncClient(
+            base_url=self.base_url(),
+            timeout=60,
             follow_redirects=True,
-            base_url=self.BASE_URL.removesuffix("/"),
         )
+
+    @classmethod
+    @abstractmethod
+    def base_url(cls) -> str: ...  # pragma: no cover
 
     async def download(self, path: str) -> str:
         try:

@@ -10,7 +10,7 @@ dependencies = [
     "structlog>=25.2.0",
 ]
 
-[dependency-groups]
+[project.optional-dependencies]
 httpx = [
     "httpx>=0.28.1",
 ]
@@ -50,7 +50,8 @@ select = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope= "session"
+asyncio_default_fixture_loop_scope="session"
+asyncio_default_test_loop_scope="session"
 addopts = "--cov=datek_web_crawler"
 
 [tool.uv]

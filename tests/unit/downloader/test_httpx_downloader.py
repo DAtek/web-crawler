@@ -5,16 +5,13 @@ from httpx import AsyncClient
 from pytest import raises
 
 from datek_web_crawler.modules.page_downloader.base import DownloadError
-from datek_web_crawler.modules.page_downloader.httpx_downloader import (
-    HTTPXPageDownloader,
-)
+from tests.helpers import DummyDownloader
 
 
 class TestHTTPXPageDownloader:
     async def test_raises_download_error_if_status_code_not_ok(self):
         # given
-        HTTPXPageDownloader.BASE_URL = "asd"
-        client = HTTPXPageDownloader()
+        client = DummyDownloader()
 
         response = Mock()
         response.status_code = BAD_REQUEST
@@ -34,8 +31,7 @@ class TestHTTPXPageDownloader:
 
     async def test_raises_download_error_if_something_unexpected_happens(self):
         # given
-        HTTPXPageDownloader.BASE_URL = "asd"
-        client = HTTPXPageDownloader()
+        client = DummyDownloader()
         error = RuntimeError("nuclear meltdown")
 
         with (

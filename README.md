@@ -11,7 +11,7 @@ Uses event loop for I/O and processes for analyzing the pages.
 
 ## Usage
 - Have a look at `tests/integration/test_crawl.py`
-- Implement your own `PageAnalyzer` class
+- Implement your own `PageAnalyzer` and `PageDownloader` classes
 - Optionally customize `structlog` logging, see [configuration](https://www.structlog.org/en/stable/configuration.html)
 - Have fun!
 

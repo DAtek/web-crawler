@@ -46,7 +46,7 @@ def ignore_closed_event_loop(f: Callable):
 
 
 @ignore_closed_event_loop
-async def from_sync_to_async_queue(queue: Queue, async_queue: AsyncQueue):
+async def from_sync_to_async_queue[T](queue: Queue[T], async_queue: AsyncQueue[T]):
     while True:
         try:
             val = await run_in_threadpool(queue.get)
@@ -57,7 +57,7 @@ async def from_sync_to_async_queue(queue: Queue, async_queue: AsyncQueue):
 
 
 @ignore_closed_event_loop
-async def from_async_to_sync_queue(async_queue: AsyncQueue, queue: Queue):
+async def from_async_to_sync_queue[T](async_queue: AsyncQueue[T], queue: Queue[T]):
     while True:
         val = await async_queue.get()
         await run_in_threadpool(queue.put, val)
