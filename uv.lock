@@ -120,6 +120,16 @@ dependencies = [
     { name = "structlog" },
 ]
 
+[package.optional-dependencies]
+httpx = [
+    { name = "httpx" },
+]
+s3 = [
+    { name = "boto3" },
+    { name = "datek-app-utils" },
+    { name = "types-boto3", extra = ["s3"] },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "boto3" },
@@ -135,20 +145,17 @@ dev = [
     { name = "types-aiofiles" },
     { name = "types-boto3", extra = ["s3"] },
 ]
-httpx = [
-    { name = "httpx" },
-]
-s3 = [
-    { name = "boto3" },
-    { name = "datek-app-utils" },
-    { name = "types-boto3", extra = ["s3"] },
-]
 
 [package.metadata]
 requires-dist = [
+    { name = "boto3", marker = "extra == 's3'", specifier = ">=1.37.1" },
+    { name = "datek-app-utils", marker = "extra == 's3'", specifier = ">=0.4.0" },
+    { name = "httpx", marker = "extra == 'httpx'", specifier = ">=0.28.1" },
     { name = "lxml", specifier = ">=5.3.2" },
     { name = "structlog", specifier = ">=25.2.0" },
+    { name = "types-boto3", extras = ["s3"], marker = "extra == 's3'", specifier = ">=1.37.33" },
 ]
+provides-extras = ["httpx", "s3"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -163,12 +170,6 @@ dev = [
     { name = "radon", specifier = ">=6.0.1" },
     { name = "ruff", specifier = ">=0.11.4" },
     { name = "types-aiofiles", specifier = ">=24.1.0.20250326" },
-    { name = "types-boto3", extras = ["s3"], specifier = ">=1.37.33" },
-]
-httpx = [{ name = "httpx", specifier = ">=0.28.1" }]
-s3 = [
-    { name = "boto3", specifier = ">=1.37.1" },
-    { name = "datek-app-utils", specifier = ">=0.4.0" },
     { name = "types-boto3", extras = ["s3"], specifier = ">=1.37.33" },
 ]
 

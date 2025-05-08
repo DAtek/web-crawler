@@ -1,0 +1,30 @@
+on:
+  push:
+
+name: CI pipeline
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: extractions/setup-just@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: "Install python venv"
+        run: "uv sync"
+
+      - name: "Lint and test"
+        run: |
+          source .venv/bin/activate
+          just test-ci
+
+      - uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: .coverage

@@ -13,7 +13,6 @@ lint:
 run-backing-services *args:
     docker compose up {{ args }}
 
-
 test-ci:
     #!/bin/bash
     set -eou pipefail

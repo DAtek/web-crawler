@@ -10,17 +10,7 @@ dependencies = [
     "structlog>=25.2.0",
 ]
 
-[project.optional-dependencies]
-httpx = [
-    "httpx>=0.28.1",
-]
-
-s3 = [
-    "datek-app-utils>=0.4.0",
-    "boto3>=1.37.1",
-    "types-boto3[s3]>=1.37.33",
-]
-
+[dependency-groups]
 dev = [
     "httpx>=0.28.1",
     "lxml-stubs>=0.5.1",
@@ -34,6 +24,17 @@ dev = [
     "boto3>=1.37.1",
     "types-boto3[s3]>=1.37.33",
     "datek-app-utils>=0.4.0",
+]
+
+[project.optional-dependencies]
+httpx = [
+    "httpx>=0.28.1",
+]
+
+s3 = [
+    "datek-app-utils>=0.4.0",
+    "boto3>=1.37.1",
+    "types-boto3[s3]>=1.37.33",
 ]
 
 [build-system]
