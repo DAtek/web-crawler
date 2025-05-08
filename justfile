@@ -18,10 +18,9 @@ test-ci:
     set -eou pipefail
 
     just lint
-    pytest tests/unit
     set -a; . .env.example; set +a
     just run-backing-services -d
     status=0
-    pytest tests/integration || status=1
+    just test || status=1
     docker compose down -v
     exit "$status"

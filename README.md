@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/DAtek/web-crawler/graph/badge.svg?token=rrht7DUefF)](https://codecov.io/gh/DAtek/web-crawler)
+
 # Web Crawler
 
 Performant, extensible and lean web crawler, utilizes all available CPUs by default. 
